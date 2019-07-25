@@ -11,6 +11,7 @@ import UIKit
 class LargeVideo: UITableViewCell {
     
     let mainView = UIView()
+    let titleLabel = UILabel()
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:)")

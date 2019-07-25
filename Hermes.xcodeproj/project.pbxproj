@@ -11,6 +11,7 @@
 		AF0E5FD922E92AA2003D09DF /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF0E5FD822E92AA2003D09DF /* AppDelegate.swift */; };
 		AF0E5FDB22E92AA2003D09DF /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF0E5FDA22E92AA2003D09DF /* ViewController.swift */; };
 		AF0E5FE022E92AAB003D09DF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AF0E5FDF22E92AAB003D09DF /* Assets.xcassets */; };
+		AF1A8E9D22E9E5FA0083C2DE /* YTKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF1A8E9C22E9E5FA0083C2DE /* YTKit.swift */; };
 		AFD98BA322E9364800081451 /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFD98BA222E9364800081451 /* Settings.swift */; };
 		AFD98BA522E9520700081451 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = AFD98BA422E9520700081451 /* GoogleService-Info.plist */; };
 		AFD98BA722E9524A00081451 /* TemplateViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFD98BA622E9524A00081451 /* TemplateViewController.swift */; };
@@ -26,6 +27,7 @@
 		AF0E5FDA22E92AA2003D09DF /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		AF0E5FDF22E92AAB003D09DF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		AF0E5FE422E92AAB003D09DF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		AF1A8E9C22E9E5FA0083C2DE /* YTKit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YTKit.swift; sourceTree = "<group>"; };
 		AFD98BA222E9364800081451 /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
 		AFD98BA422E9520700081451 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		AFD98BA622E9524A00081451 /* TemplateViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TemplateViewController.swift; sourceTree = "<group>"; };
@@ -89,6 +91,7 @@
 				AFD98BA622E9524A00081451 /* TemplateViewController.swift */,
 				AFD98BA822E953F100081451 /* ContentViews.swift */,
 				AFD98BA222E9364800081451 /* Settings.swift */,
+				AF1A8E9C22E9E5FA0083C2DE /* YTKit.swift */,
 				AFD98BAA22E958E800081451 /* LaunchScreen.storyboard */,
 				AF0E5FDF22E92AAB003D09DF /* Assets.xcassets */,
 				AFD98BA422E9520700081451 /* GoogleService-Info.plist */,
@@ -231,6 +234,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AFD98BA322E9364800081451 /* Settings.swift in Sources */,
+				AF1A8E9D22E9E5FA0083C2DE /* YTKit.swift in Sources */,
 				AF0E5FDB22E92AA2003D09DF /* ViewController.swift in Sources */,
 				AFD98BA722E9524A00081451 /* TemplateViewController.swift in Sources */,
 				AF0E5FD922E92AA2003D09DF /* AppDelegate.swift in Sources */,
