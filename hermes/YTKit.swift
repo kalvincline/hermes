@@ -1,406 +1,665 @@
 //
 //  YTKit.swift
-//  hermesforyoutube
+//  hermes
 //
-//  Created by Aidan Cline on 7/25/19.
+//  Created by Aidan Cline on 3/11/19.
 //  Copyright © 2019 Aidan Cline. All rights reserved.
 //
 
 import UIKit
+import GoogleAPIClientForREST
+import FirebaseCore
 
-class YouTube {
-    private static let invidiousURL = "https://www.invidio.us/api/v1"
-    private static let youtubeApiUrl = "https://www.googleapis.com/youtube/v3"
+class YTCore {
+
+    private let apiKey: String
     
-    struct Thumbnail {
-        var low: String
-        var medium: String
-        var high: String
-        var maxRes: String
+    //testing keys
+    //private let apiKey = "AIzaSyDElkUB12I-Ks-WTK52HA5fI6FZZ24jcDc"
+    //private let apiKey = "AIzaSyD9tUI2N4f0745lYRXzmGVjTpFe2S61Ul0" // for when it stops working
+    //private let apiKey = "AIzaSyCYnLCN3B2Kytv_E7hGdXhBepWud-rAaX0" // for when it stops working again
+    //private let apiKey = "AIzaSyAR2b1ZZoXvChZt8p8zJsIjmLbaMgUFjK8" // for when it stops working 3x
+    
+    // api key for carson's app
+    //private let apiKey = "AIzaSyBR6IjPUbn1ShQf_uYqd-4aYCamTiEAeY8"
+    
+    // breaks it in case there's terrible internet or something (to save quota)
+    //private let apiKey = ""
+    
+    // api key for my app
+    //private let apiKey = "AIzaSyC-0K6xZtvLbmkfU_AFsKNBrIJa9jev7Eg"
+    
+    // api key for maddy's app
+    //private let apiKey = "AIzaSyCR7KGt9y1LjNXSuoDNLJQEQhqCYZz8QqY"
+    
+    // api key for nick's app
+    //private let apiKey = "AIzaSyD28aO7EqD22pyl6OBg-TKVEg_qfRO7XR8"
+    
+    // api key for paige's app
+    //private let apiKey = "AIzaSyA87p5-Uu_xx23bnT6Tcxt3wcSySY-3sW8"
+
+    var url = URL(string: "https://www.googleapis.com/youtube/v3/")
+    var identifier = ""
+    
+    convenience init() {
+        self.init(identifier: "")
     }
     
-    struct Channel {
-        var identifier: String?
-        var title: String?
-        var url: String?
-        var thumbnails: Thumbnail?
-        var banners: Thumbnail?
-        var subscribers: Int?
-        var totalViews: Int?
-        var joined: Date?
-        var isAgeRestricted: Bool?
-        var description: String?
-        var relatedChannels: [Channel]?
+    init(identifier: String) {
+        self.identifier = identifier
+        apiKey = FIRApp.defaultApp()?.options.apiKey ?? ""
+    }
+    
+    func performGetRequest(targetURL: URL!, completion: @escaping (_ data: Data?, _ HTTPStatusCode: Int, _ error: Error?) -> Void) {
+        let session = URLSession(configuration: .default)
+        if settings.userAccessToken != nil {
+            url = URL(string: targetURL.absoluteString)
+        } else {
+            url = URL(string: "\(targetURL.absoluteString)&key=\(apiKey)")!
+        }
+        var request = URLRequest(url: url!)
+        if let userToken = settings.userAccessToken {
+            request.addValue("Bearer \(userToken)", forHTTPHeaderField: "Authorization")
+        }
+        let task = session.dataTask(with: request) { (data: Data!, response: URLResponse!, error: Error!) in
+            DispatchQueue.global(qos: .default).async {
+                completion(data, (response as! HTTPURLResponse?)?.statusCode ?? -1, error)
+            }
+        }
+        task.resume()
+    }
+    
+    struct HTTPField {
+        var value: String
+        var header: String
+    }
+
+    func performPostRequest(targetURL: URL!, headers: [HTTPField]?, body: Data?, completion: @escaping (_ HTTPStatusCode: Int, _ error: Error?) -> Void) {
+        let session = URLSession(configuration: .default)
+        if settings.userAccessToken != nil {
+            url = URL(string: targetURL.absoluteString)
+        } else {
+            url = URL(string: "\(targetURL.absoluteString)&key=\(apiKey)")!
+        }
+        var request = URLRequest(url: url!)
+        request.httpMethod = "POST"
+        request.httpBody = body
+        if let userToken = settings.userAccessToken {
+            request.addValue("Bearer \(userToken)", forHTTPHeaderField: "Authorization")
+        }
+        if let headers = headers {
+            for field in headers {
+                request.addValue(field.value, forHTTPHeaderField: field.header)
+            }
+        }
+        let task = session.dataTask(with: request) { (data: Data!, response: URLResponse!, error: Error!) in
+            DispatchQueue.global(qos: .default).async {
+                completion((response as! HTTPURLResponse?)?.statusCode ?? -1, error)
+            }
+        }
+        task.resume()
+    }
+    
+    func downloadImage(targetURL url: URL!, completion: @escaping (_ data: Data?, _ HTTPStatusCode: Int, _ error: Error?) -> Void) {
+        let session = URLSession(configuration: .default)
+        let task = session.dataTask(with: url) { (data: Data!, response: URLResponse!, error: Error!) in
+            DispatchQueue.global(qos: .default).async {
+                completion(data, (response as! HTTPURLResponse?)?.statusCode ?? -1, error)
+            }
+        }
+        task.resume()
+    }
+    
+    func getInfo(_ completion: @escaping (() -> Void)) {
         
-        enum Fields: String {
-            case title = "author"
-            case url = "authorUrl"
-            case thumbnails = "authorThumbnails"
-            case banners = "authorBanners"
-            case subscribers = "subCount"
-            case views = "totalViews"
-            case joined = "joined"
-            case ageRestricted = "isFamilyFriendly"
-            case description = "description"
-            case videos = "latestVideos"
-            case channels = "relatedChannels"
-            case all = "author,authorUrl,authorThumbnails,authorBanners,subCount,totalViews,joined,isFamilyFriendly,description,latestVideos,relatedChannels"
+    }
+    
+}
+
+class YTChannelAvatar: YTCore {
+    
+    private var data = GTLRYouTube_Channel()
+    var GTLR: GTLRYouTube_Channel {
+        return data
+    }
+    
+    func setData(_ newData: GTLRYouTube_Channel) {
+        data = newData
+    }
+    
+    override func getInfo(_ completion: @escaping (() -> Void)) {
+        super.getInfo(completion)
+        url = URL(string: "https://www.googleapis.com/youtube/v3/channels?part=snippet&id=\(identifier)")
+        performGetRequest(targetURL: url) { (data, status, error) in
+            if let error = error {
+                print(error)
+            }
+            if status != 200 {
+                print("YTChannelAvatar returned HTTP status \(status)")
+            }
+            var json = Dictionary<AnyHashable, Any>()
+            if let data = data {
+                do {
+                    json = try JSONSerialization.jsonObject(with: data, options: []) as! [AnyHashable: Any]
+                } catch {
+                    print("error serializing json request for YTChannelAvatar")
+                }
+            }
+            let response = GTLRYouTube_ChannelListResponse(json: json)
+            if let items = response.items {
+                if items.count > 0 {
+                    self.setData(items[0])
+                }
+            } else {
+                print("YTChannelAvatar request returned nil")
+            }
+            DispatchQueue.main.async {
+                completion()
+            }
         }
     }
     
-    static func getChannel(identifier: String?, fields: [Channel.Fields], _ completion: @escaping (Channel) -> Void) {
-        if let identifier = identifier {
-            var urlString = "\(invidiousURL)/channels/\(identifier)?fields="
-            for field in fields {
-                urlString.append(field.rawValue)
-                urlString.append((field != fields.last) ? "," : "")
-            }
-            
-            URLDataHandler.performHTTPRequest(url: URL(string: urlString)!, method: .get, body: nil, fields: nil) { (data, status, error) in
+    func getAvatar(_ completion: @escaping (_ image: UIImage?) -> Void) {
+        if let url = URL(string: data.snippet?.thumbnails?.defaultProperty?.url ?? "") {
+            downloadImage(targetURL: url) { (data, status, error) in
                 if let error = error {
-                    print("YTKit.Channel error: \(error.localizedDescription)")
+                    print(error)
+                }
+                if status != 200 {
+                    print("image download failed with code \(status)")
+                }
+                var image: UIImage?
+                if let data = data {
+                    image = UIImage(data: data)
                 } else {
-                    if status != 200 {
-                        print("YTKit.Channel request returned \(status)")
-                    }
-                    
-                    if let data = data {
-                        var json: [AnyHashable: Any] = [:]
-                        do {
-                            json = try JSONSerialization.jsonObject(with: data) as! [AnyHashable: Any]
-                        } catch {
-                            print("YTKit.Channel failed to serialize JSON response")
-                        }
-                        
-                        var channel = Channel()
-                        channel.identifier = identifier
-                        channel.title = json["author"] as? String
-                        channel.description = json["description"] as? String
-                        channel.isAgeRestricted = !(json["isFamilyFriendly"] as? Bool ?? true)
-                        channel.totalViews = json["totalViews"] as? Int
-                        channel.subscribers = json["subCount"] as? Int
-                        channel.url = json["authorUrl"] as? String
-                        
-                        if let thumbnailArray = json["authorThumbnails"] as? [[String: Any]] {
-                            channel.thumbnails = Thumbnail(low: "", medium: "", high: "", maxRes: "")
-                            for thumbnail in thumbnailArray {
-                                let url = thumbnail["url"] as! String
-                                let size = thumbnail["width"] as? Int
-                                if size == 512 {
-                                    channel.thumbnails?.maxRes = url
-                                } else if size == 176 {
-                                    channel.thumbnails?.high = url
-                                } else if size == 100 {
-                                    channel.thumbnails?.medium = url
-                                } else if size == 76 {
-                                    channel.thumbnails?.low = url
-                                }
-                            }
-                        }
-                        
-                        if let thumbnailArray = json["authorBanners"] as? [[String: Any]] {
-                            channel.banners = Thumbnail(low: "", medium: "", high: "", maxRes: "")
-                            for thumbnail in thumbnailArray {
-                                let url = thumbnail["url"] as! String
-                                let size = thumbnail["width"] as? Int
-                                if size == 2560 {
-                                    channel.banners?.maxRes = url
-                                } else if size == 2120 {
-                                    channel.banners?.high = url
-                                } else if size == 1060 {
-                                    channel.banners?.medium = url
-                                } else if size == 512 {
-                                    channel.banners?.low = url
-                                }
-                            }
-                        }
-                    }
+                    image = nil
+                }
+                DispatchQueue.main.async {
+                    completion(image)
                 }
             }
         }
     }
     
-    enum VideoSort: String {
-        case popular = "popular"
-        case latest = "latest"
-        case oldest = "oldest"
+}
+
+class YTChannel_DEPRECATED: YTCore {
+    
+    private var data = GTLRYouTube_Channel()
+    var GTLR: GTLRYouTube_Channel {
+        get {
+            return data
+        }
+        set {
+            data = newValue
+        }
     }
     
-    static func getChannelVideos(channel: Channel, page: Int, sort: VideoSort, _ completion: @escaping ([Video]) -> Void) {
-        getChannelVideos(identifier: channel.identifier, page: page, sort: sort, completion)
+    func setData(_ newData: GTLRYouTube_Channel) {
+        data = newData
     }
     
-    static func getChannelVideos(identifier: String?, page: Int, sort: VideoSort, _ completion: @escaping ([Video]) -> Void) {
-        if let identifier = identifier {
-            let urlString = "\(invidiousURL)/channels/videos/\(identifier)?page=\(page)&videoSort=\(sort.rawValue)"
-            URLDataHandler.performHTTPRequest(url: URL(string: urlString)!, method: .get, body: nil, fields: nil) { (data, status, error) in
+    override func getInfo(_ completion: @escaping (() -> Void)) {
+        super.getInfo(completion)
+        url = URL(string: "https://www.googleapis.com/youtube/v3/channels?part=statistics,snippet,contentDetails&id=\(identifier)")
+        performGetRequest(targetURL: url) { (data, status, error) in
+            if let error = error {
+                print(error)
+            }
+            if status != 200 {
+                print("YTChannel error: HTTP status \(status)")
+            }
+            var json = Dictionary<AnyHashable, Any>()
+            if let data = data {
+                do {
+                    json = try JSONSerialization.jsonObject(with: data, options: []) as! [AnyHashable: Any]
+                } catch {
+                    print("error serializing json request for YTChannel")
+                }
+                let response = GTLRYouTube_ChannelListResponse(json: json)
+                if let items = response.items {
+                    if items.count > 0 {
+                        self.setData(items[0])
+                    }
+                }
+            } else {
+                print("YTChannel request returned nil")
+            }
+            DispatchQueue.main.async {
+                completion()
+            }
+        }
+    }
+    
+    func getAvatar(_ completion: @escaping (_ image: UIImage?) -> Void) {
+        if let url = URL(string: data.snippet?.thumbnails?.defaultProperty?.url ?? "") {
+            downloadImage(targetURL: url) { (data, status, error) in
                 if let error = error {
-                    print("YTKit.Channel.Videos error: \(error.localizedDescription)")
+                    print(error)
+                }
+                if status != 200 {
+                    print("image download failed with code \(status)")
+                }
+                var image: UIImage?
+                if let data = data {
+                    image = UIImage(data: data)
                 } else {
-                    if status != 200 {
-                        print("YTKit.Channel.Videos request returned status \(status)")
-                    }
-                    
-                    if let data = data {
-                        var json: [[AnyHashable: Any]] = []
-                        do {
-                            json = try JSONSerialization.jsonObject(with: data) as? [[AnyHashable: Any]] ?? []
-                        } catch {
-                            print("YTKit.Channel.Videos failed to serialize JSON response")
-                        }
-                        
-                        var videos: [Video] = []
-                        for json in json {
-                            var video = Video(identifier: json["videoId"] as? String)
-                            video.channel = Channel()
-                            video.title = json["title"] as? String
-                            video.channel?.title = json["author"] as? String
-                            video.channel?.identifier = json["authorId"] as? String
-                            video.description = json["description"] as? String
-                            
-                            if let thumbnailArray = json["videoThumbnails"] as? [[String: Any]] {
-                                video.thumbnails = Thumbnail(low: "", medium: "", high: "", maxRes: "")
-                                for thumbnail in thumbnailArray {
-                                    if thumbnail["quality"] as? String == "maxresdefault" {
-                                        video.thumbnails?.maxRes = thumbnail["url"] as! String
-                                    } else if thumbnail["quality"] as? String == "sddefault" {
-                                        video.thumbnails?.high = thumbnail["url"] as! String
-                                    } else if thumbnail["quality"] as? String == "high" {
-                                        video.thumbnails?.medium = thumbnail["url"] as! String
-                                    } else if thumbnail["quality"] as? String == "medium" {
-                                        video.thumbnails?.low = thumbnail["url"] as! String
-                                    }
-                                }
-                            }
-                            
-                            videos.append(video)
-                        }
-                        
-                        completion(videos)
-                    }
+                    image = nil
+                }
+                DispatchQueue.main.async {
+                    completion(image)
                 }
             }
         }
     }
     
-    struct Video {
-        init() {}
-        
-        init(identifier: String?) {
-            self.identifier = identifier
-        }
-        
-        var identifier: String?
-        var title: String?
-        var description: String?
-        var thumbnails: Thumbnail?
-        var length: TimeInterval?
-        var likes: Int?
-        var dislikes: Int?
-        var views: Int?
-        var isAgeRestricted: Bool?
-        var streamURLs: VideoURLs?
-        var videoURLs: VideoURLs?
-        var publishDate: Date?
-        var channel: Channel?
-        var recommendedVideos: [Video]?
-        
-        enum Fields: String {
-            case title = "title"
-            case thumbnails = "videoThumbnails"
-            case description = "description"
-            case published = "published"
-            case length = "lengthSeconds"
-            case views = "viewCount"
-            case likes = "likeCount"
-            case dislikes = "dislikeCount"
-            case ageRestricted = "isFamilyFriendly"
-            case channelTitle = "author"
-            case channelID = "authorId"
-            case channelThumbnails = "authorThumbnails"
-            case channelSubCount = "subCountText"
-            case streamURLs = "adaptiveFormats"
-            case videoURLs = "formatStreams"
-            case relatedVideos = "recommendedVideos"
-            case all = "title,videoThumbnails,description,published,lengthSeconds,viewCount,likeCount,dislikeCount,isFamilyFriendly,author,authorId,authorThumbnails,subCountText,adaptiveFormats,recommendedVideos"
-        }
-        
-        struct VideoURLs {
-            var audioOnly: String?
-            var quality144p: String?
-            var quality240p: String?
-            var quality360p: String?
-            var quality480p: String?
-            var quality720p: String?
-            var quality1080p: String?
-            var quality720p60: String?
-            var quality1080p60: String?
+    var title: String? {
+        return data.snippet?.title
+    }
+    
+    var description: String? {
+        return data.snippet?.descriptionProperty
+    }
+    
+    var subscribers: NSNumber? {
+        return data.statistics?.subscriberCount
+    }
+    
+    var videoCount: NSNumber? {
+        return data.statistics?.videoCount
+    }
+    
+    var viewCount: NSNumber? {
+        return data.statistics?.viewCount
+    }
+    
+    var uploadsPlaylistID: String? {
+        return data.contentDetails?.relatedPlaylists?.uploads
+    }
+    
+    var featuredVideoID: String? {
+        return data.brandingSettings?.channel?.unsubscribedTrailer
+    }
+    
+    func subscribe() {
+        print("will subscribe to \(title!)")
+    }
+    
+    func unsubscribe() {
+        print("will unsubscribe from \(title!)")
+    }
+    
+}
+
+class YTChannelFull: YTChannel_DEPRECATED {
+    
+    override func getInfo(_ completion: @escaping (() -> Void)) {
+        super.getInfo(completion)
+        url = URL(string: "https://www.googleapis.com/youtube/v3/channels?part=statistics,snippet,contentDetails,brandingSettings&id=\(identifier)")
+        performGetRequest(targetURL: url) { (data, status, error) in
+            if let error = error {
+                print(error)
+            }
+            if status != 200 {
+                print("YTChannel error: HTTP status \(status)")
+            }
+            var json = Dictionary<AnyHashable, Any>()
+            if let data = data {
+                do {
+                    json = try JSONSerialization.jsonObject(with: data, options: []) as! [AnyHashable: Any]
+                } catch {
+                    print("error serializing json request for YTChannel")
+                }
+            }
+            let response = GTLRYouTube_ChannelListResponse(json: json)
+            if let items = response.items {
+                if items.count > 0 {
+                    self.setData(items[0])
+                }
+            } else {
+                print("YTChannel request returned nil")
+            }
+            DispatchQueue.main.async {
+                completion()
+            }
         }
     }
     
-    static func getVideo(identifier: String?, fields: [Video.Fields], _ completion: @escaping (Video) -> Void) {
-        if let identifier = identifier {
-            var urlString = "\(invidiousURL)/videos/\(identifier)?fields="
-            for field in fields {
-                urlString.append(field.rawValue)
-                urlString.append((field != fields.last) ? "," : "")
-            }
-            
-            URLDataHandler.performHTTPRequest(url: URL(string: urlString)!, method: .get, body: nil, fields: nil) { (data, status, error) in
+    func getBanner(_ completion: @escaping (_ image: UIImage?) -> Void) {
+        if let url = URL(string: GTLR.brandingSettings?.image?.bannerMobileMediumHdImageUrl ?? "") {
+            downloadImage(targetURL: url) { (data, status, error) in
                 if let error = error {
-                    print("YTKit.Video error: \(error.localizedDescription)")
+                    print(error)
+                }
+                if status != 200 {
+                    print("image download failed with code \(status)")
+                }
+                var image: UIImage?
+                if let data = data {
+                    image = UIImage(data: data)
                 } else {
-                    if status != 200 {
-                        print("YTKit.Video request returned \(status)")
-                    }
-                    
-                    if let data = data {
-                        var json: [AnyHashable: Any] = [:]
-                        do {
-                            json = try JSONSerialization.jsonObject(with: data) as! [AnyHashable: Any]
-                        } catch {
-                            print("YTKit.Video failed to serialize JSON response")
+                    image = nil
+                }
+                DispatchQueue.main.async {
+                    completion(image)
+                }
+            }
+        }
+    }
+    
+}
+
+class YTChannelSection: YTCore {
+    
+    var items = [String]()
+    
+    override func getInfo(_ completion: @escaping (() -> Void)) {
+        super.getInfo(completion)
+        url = URL(string: "https://www.googleapis.com/youtube/v3/channelSections?part=snippet,contentDetails&channelId=\(identifier)")
+        performGetRequest(targetURL: url) { (data, status, error) in
+            if let error = error {
+                print(error)
+            }
+            if status != 200 {
+                print("ytchannelsection returned status \(status)")
+            }
+            if let data = data {
+                var json = Dictionary<AnyHashable, Any>()
+                do {
+                    json = try JSONSerialization.jsonObject(with: data, options: []) as! [AnyHashable: Any]
+                } catch {
+                    print("error serializing ytchannelsection json")
+                }
+                let response = GTLRYouTube_ChannelSectionListResponse(json: json)
+                if let items = response.items {
+                    for item in items {
+                        if let id = item.contentDetails?.channels {
+                            print(id)
+                            self.items.append(id[0])
                         }
-                        
-                        var video = Video()
-                        video.identifier = identifier
-                        video.title = json["title"] as? String
-                        video.description = json["description"] as? String
-                        video.views = json["viewCount"] as? Int
-                        video.likes = json["likeCount"] as? Int
-                        video.dislikes = json["dislikeCount"] as? Int
-                        video.isAgeRestricted = !(json["isFamilyFriendly"] as? Bool ?? true)
-                        video.length = json["lengthSeconds"] as? TimeInterval
-                        
-                        video.channel = Channel()
-                        video.channel?.title = json["author"] as? String
-                        video.channel?.identifier = json["authorId"] as? String
-                        
-                        if let urlArray = json["adaptiveFormats"] as? [[String: Any]] {
-                            video.streamURLs = Video.VideoURLs()
-                            for url in urlArray {
-                                if url["container"] as? String == "mp4" {
-                                    if url["qualityLabel"] as? String == "1080p60" {
-                                        video.streamURLs!.quality1080p60 = url["url"] as? String
-                                    } else if url["qualityLabel"] as? String == "1080p" {
-                                        video.streamURLs!.quality1080p = url["url"] as? String
-                                    } else if url["qualityLabel"] as? String == "720p60" {
-                                        video.streamURLs!.quality720p60 = url["url"] as? String
-                                    } else if url["qualityLabel"] as? String == "720p" {
-                                        video.streamURLs!.quality720p = url["url"] as? String
-                                    } else if url["qualityLabel"] as? String == "480p" {
-                                        video.streamURLs!.quality480p = url["url"] as? String
-                                    } else if url["qualityLabel"] as? String == "360p" {
-                                        video.streamURLs!.quality360p = url["url"] as? String
-                                    } else if url["qualityLabel"] as? String == "240p" {
-                                        video.streamURLs!.quality240p = url["url"] as? String
-                                    } else if url["qualityLabel"] as? String == "144p" {
-                                        video.streamURLs!.quality144p = url["url"] as? String
-                                    }
-                                } else if url["container"] as? String == "m4a" {
-                                    video.streamURLs!.audioOnly = url["url"] as? String
-                                }
-                            }
-                        }
-                        
-                        if let urlArray = json["formatStreams"] as? [[String: Any]] {
-                            video.videoURLs = Video.VideoURLs()
-                            for url in urlArray {
-                                if url["container"] as? String == "mp4" {
-                                    print(url["qualityLabel"] as! String)
-                                    if url["qualityLabel"] as? String == "1080p60" {
-                                        video.videoURLs!.quality1080p60 = url["url"] as? String
-                                    } else if url["qualityLabel"] as? String == "1080p" {
-                                        video.videoURLs!.quality1080p = url["url"] as? String
-                                    } else if url["qualityLabel"] as? String == "720p60" {
-                                        video.videoURLs!.quality720p60 = url["url"] as? String
-                                    } else if url["qualityLabel"] as? String == "720p" {
-                                        video.videoURLs!.quality720p = url["url"] as? String
-                                    } else if url["qualityLabel"] as? String == "480p" {
-                                        video.videoURLs!.quality480p = url["url"] as? String
-                                    } else if url["qualityLabel"] as? String == "360p" {
-                                        video.videoURLs!.quality360p = url["url"] as? String
-                                    } else if url["qualityLabel"] as? String == "240p" {
-                                        video.videoURLs!.quality240p = url["url"] as? String
-                                    } else if url["qualityLabel"] as? String == "144p" {
-                                        video.videoURLs!.quality144p = url["url"] as? String
-                                    }
-                                } else if url["container"] as? String == "m4a" {
-                                    video.videoURLs!.audioOnly = url["url"] as? String
-                                }
-                            }
-                        }
-                        
-                        if let thumbnailArray = json["videoThumbnails"] as? [[String: Any]] {
-                            video.thumbnails = Thumbnail(low: "", medium: "", high: "", maxRes: "")
-                            for thumbnail in thumbnailArray {
-                                if thumbnail["quality"] as? String == "maxresdefault" {
-                                    video.thumbnails?.maxRes = thumbnail["url"] as! String
-                                } else if thumbnail["quality"] as? String == "sddefault" {
-                                    video.thumbnails?.high = thumbnail["url"] as! String
-                                } else if thumbnail["quality"] as? String == "high" {
-                                    video.thumbnails?.medium = thumbnail["url"] as! String
-                                } else if thumbnail["quality"] as? String == "medium" {
-                                    video.thumbnails?.low = thumbnail["url"] as! String
-                                }
-                            }
-                        }
-                        
-                        if let thumbnailArray = json["authorThumbnails"] as? [[String: Any]] {
-                            video.channel?.thumbnails = Thumbnail(low: "", medium: "", high: "", maxRes: "")
-                            for thumbnail in thumbnailArray {
-                                let size = thumbnail["width"] as? Int
-                                let url = thumbnail["url"] as! String
-                                if size == 512 {
-                                    video.channel?.thumbnails?.maxRes = url
-                                } else if size == 176 {
-                                    video.channel?.thumbnails?.high = url
-                                } else if size == 100 {
-                                    video.channel?.thumbnails?.medium = url
-                                } else if size == 76 {
-                                    video.channel?.thumbnails?.low = url
-                                }
-                            }
-                        }
-                        
-                        if let videoArray = json["recommendedVideos"] as? [[String: Any]] {
-                            video.recommendedVideos = []
-                            for item in videoArray {
-                                var recommendedVideo = Video(identifier: item["videoId"] as? String)
-                                recommendedVideo.title = item["title"] as? String
-                                recommendedVideo.channel?.title = item["author"] as? String
-                                recommendedVideo.length = item["lengthSeconds"] as? TimeInterval
-                                
-                                if let thumbnailArray = item["authorThumbnails"] as? [[String: Any]] {
-                                    recommendedVideo.channel?.thumbnails = Thumbnail(low: "", medium: "", high: "", maxRes: "")
-                                    for thumbnail in thumbnailArray {
-                                        let size = thumbnail["width"] as? Int
-                                        let url = thumbnail["url"] as! String
-                                        if size == 512 {
-                                            recommendedVideo.channel?.thumbnails?.maxRes = url
-                                        } else if size == 176 {
-                                            recommendedVideo.channel?.thumbnails?.high = url
-                                        } else if size == 100 {
-                                            recommendedVideo.channel?.thumbnails?.medium = url
-                                        } else if size == 76 {
-                                            recommendedVideo.channel?.thumbnails?.low = url
-                                        }
-                                    }
-                                }
-                                
-                                video.recommendedVideos?.append(recommendedVideo)
-                            }
-                        }
-                        
-                        if let interval = json["published"] as? TimeInterval {
-                            video.publishDate = Date(timeIntervalSince1970: interval)
-                        } else {
-                            video.publishDate = nil
-                        }
-                        
-                        completion(video)
                     }
                 }
+            } else {
+                print("ytchannelsection returned nil")
+            }
+            DispatchQueue.main.async {
+                completion()
+            }
+        }
+    }
+    
+}
+
+class YTVideo_DEPRECATED: YTCore {
+    
+    var data = GTLRYouTube_Video()
+    
+    override func getInfo(_ completion: @escaping (() -> Void)) {
+        super.getInfo(completion)
+        url = URL(string: "https://www.googleapis.com/youtube/v3/videos?part=statistics,snippet&id=\(identifier)")
+        performGetRequest(targetURL: url) { (data, status, error) in
+            if let error = error {
+                print(error)
+            }
+            if status != 200 {
+                print("YTVideo error: HTTP status \(status)")
+            }
+            var json = Dictionary<AnyHashable, Any>()
+            if let data = data {
+                do {
+                    json = try JSONSerialization.jsonObject(with: data, options: []) as! [AnyHashable: Any]
+                } catch {
+                    print("error serializing json request for YTChannel")
+                }
+            }
+            let response = GTLRYouTube_VideoListResponse(json: json)
+            if let items = response.items {
+                if items.count > 0 {
+                    self.data = items[0]
+                }
+            } else {
+                let error = GTLRErrorObject(json: json)
+                print(error.errors?[0].message ?? "unknown error loading YTChannel")
+            }
+            DispatchQueue.main.async {
+                completion()
+            }
+        }
+    }
+    
+    var channelID: String? {
+        return data.snippet?.channelId
+    }
+    
+    var title: String? {
+        return data.snippet?.localized?.title
+    }
+    
+    var description: String? {
+        return data.snippet?.descriptionProperty
+    }
+    
+    var channelName: String? {
+        return data.snippet?.channelTitle
+    }
+    
+    var thumbnails: GTLRYouTube_ThumbnailDetails? {
+        return data.snippet?.thumbnails
+    }
+    
+    var views: NSNumber? {
+        return data.statistics?.viewCount
+    }
+    
+    var likes: NSNumber? {
+        return data.statistics?.likeCount
+    }
+    
+    var dislikes: NSNumber? {
+        return data.statistics?.dislikeCount
+    }
+    
+    var category: String? {
+        return data.snippet?.categoryId
+    }
+    
+    var uploadDate: Date? {
+        return data.snippet?.publishedAt?.date
+    }
+    
+    var length: String? {
+        return data.contentDetails?.duration
+    }
+    
+    func getThumbnail(_ completion: @escaping (_ image: UIImage?) -> Void) {
+        var imageURL: URL?
+        if let url = URL(string: data.snippet?.thumbnails?.standard?.url ?? "") {
+            imageURL = url
+        } else if let url = URL(string: data.snippet?.thumbnails?.medium?.url ?? "") {
+            imageURL = url
+        }
+        if let url = imageURL {
+            downloadImage(targetURL: url) { (data, status, error) in
+                if let error = error {
+                    print(error)
+                }
+                if status != 200 {
+                    print("image download failed with code \(status)")
+                }
+                var image: UIImage?
+                if let data = data {
+                    image = UIImage(data: data)
+                } else {
+                    image = nil
+                }
+                DispatchQueue.main.async {
+                    completion(image)
+                }
+            }
+        } else if let url = URL(string: data.snippet?.thumbnails?.standard?.url ?? "") {
+            downloadImage(targetURL: url) { (data, status, error) in
+                if let error = error {
+                    print(error)
+                }
+                if status != 200 {
+                    print("image download failed with code \(status)")
+                }
+                var image: UIImage?
+                if let data = data {
+                    image = UIImage(data: data)
+                } else {
+                    image = nil
+                }
+                DispatchQueue.main.async {
+                    completion(image)
+                }
+            }
+        }
+    }
+    
+}
+
+class YTPlaylist_DEPRECATED: YTCore {
+    
+    private var data = GTLRYouTube_Playlist()
+    
+    override func getInfo(_ completion: @escaping (() -> Void)) {
+        super.getInfo(completion)
+        url = URL(string: "https://www.googleapis.com/youtube/v3/playlists?part=snippet,contentDetails&id=\(identifier)")
+        performGetRequest(targetURL: url) { (data, status, error) in
+            if let error = error {
+                print(error)
+            }
+            if status != 200 {
+                print("YTPlaylist error: HTTP status \(status)")
+            }
+            var json = Dictionary<AnyHashable, Any>()
+            if let data = data {
+                do {
+                    json = try JSONSerialization.jsonObject(with: data, options: []) as! [AnyHashable: Any]
+                } catch {
+                    print("error serializing json request for YTPlaylist")
+                }
+            }
+            let response = GTLRYouTube_PlaylistListResponse(json: json)
+            self.data = response.items![0]
+            if let items = response.items {
+                if items.count > 0 {
+                    self.data = items[0]
+                }
+            } else {
+                print("YTPlaylist request returned nil")
+            }
+            DispatchQueue.main.async {
+                completion()
+            }
+        }
+    }
+    
+}
+
+class YTPlaylistItems_DEPRECATED: YTCore {
+    
+    private var data = GTLRYouTube_PlaylistItemListResponse()
+    
+    var items: [GTLRYouTube_PlaylistItem] {
+        if let items = data.items {
+            return items
+        } else {
+            return [GTLRYouTube_PlaylistItem]()
+        }
+    }
+    
+    var GTLR: GTLRYouTube_PlaylistItemListResponse {
+        return data
+    }
+    
+    var maxResults = 25
+    var pageToken: String?
+    
+    override func getInfo(_ completion: @escaping (() -> Void)) {
+        super.getInfo(completion)
+        var urlString = "https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=\(identifier)&maxResults=\(maxResults)"
+        if pageToken != nil {
+            urlString.append("&pageToken=\(pageToken!)")
+        }
+        url = URL(string: urlString)
+        performGetRequest(targetURL: url) { (data, status, error) in
+            if let error = error {
+                print(error)
+            }
+            if status != 200 {
+                print("YTPlaylistItems error: HTTP status \(status)")
+            }
+            var json = Dictionary<AnyHashable, Any>()
+            if let data = data {
+                do {
+                    json = try JSONSerialization.jsonObject(with: data, options: []) as! [AnyHashable: Any]
+                } catch {
+                    print("error serializing YTPlaylistItems object")
+                }
+            }
+            let response = GTLRYouTube_PlaylistItemListResponse(json: json)
+            self.data = response
+            if response.items == nil {
+                print("YTPlaylistItems returned nil")
+            }
+            DispatchQueue.main.async {
+                completion()
+            }
+        }
+    }
+    
+    var nextPageToken: String? {
+        return data.nextPageToken
+    }
+    
+    var previousPageToken: String? {
+        return data.prevPageToken
+    }
+    
+}
+
+class YTPopularVideos: YTCore {
+    
+    var data = GTLRYouTube_VideoListResponse()
+    var items = [YTVideo_DEPRECATED]()
+    
+    var maxResults = 10
+    var pageToken: String?
+    
+    override func getInfo(_ completion: @escaping (() -> Void)) {
+        super.getInfo(completion)
+        url = URL(string: "https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&chart=mostPopular&locale=us&maxResults=\(maxResults)&regionCode=US\((pageToken != nil) ? "&pageToken=\(pageToken!)" : "")")
+        performGetRequest(targetURL: url) { (data, status, error) in
+            if let error = error {
+                print(error)
+            }
+            if status != 200 {
+                print("YTVideo error: HTTP status \(status)")
+            }
+            var json = Dictionary<AnyHashable, Any>()
+            if let data = data {
+                do {
+                    json = try JSONSerialization.jsonObject(with: data, options: []) as! [AnyHashable: Any]
+                } catch {
+                    print("error serializing json request for YTPopularVideos")
+                }
+            }
+            let response = GTLRYouTube_VideoListResponse(json: json)
+            self.data = response
+            if let items = response.items {
+                for item in items {
+                    let video = YTVideo_DEPRECATED()
+                    video.data = item
+                    self.items.append(video)
+                }
+            } else {
+                let error = GTLRErrorObject(json: json)
+                print(error.errors?[0].message ?? "unknown error loading YTChannel")
+            }
+            DispatchQueue.main.async {
+                completion()
             }
         }
     }
@@ -408,7 +667,8 @@ class YouTube {
 }
 
 extension String {
-    var withPercentEncoding: String? {
+    func withUrlPercentEncoding() -> String? {
+        //let unreserved = "-._~/?"
         let unreserved = "-._~?"
         let allowed = NSMutableCharacterSet.alphanumeric()
         allowed.addCharacters(in: unreserved)
@@ -416,61 +676,882 @@ extension String {
     }
 }
 
-class URLDataHandler {
+class YTSearch: YTCore {
     
-    struct HTTPField {
-        var value: String
-        var header: String
+    var data = GTLRYouTube_SearchListResponse()
+    var resultIds = [String]()
+    
+    enum ResultTypes: String {
+        case channel = "channel"
+        case playlist = "playlist"
+        case video = "video"
     }
     
-    enum HTTPMethod: String {
-        case get = "GET"
-        case post = "POST"
-        case delete = "DELETE"
-        case put = "PUT"
-        case none
+    enum SearchSorts: String {
+        case relevance = "relevance"
+        case latest = "date"
+        case top = "rating"
+        case alphabetical = "title"
     }
     
-    static func performHTTPRequest(url: URL!, method: HTTPMethod, body: Data?, fields: [HTTPField]?, _ completion: ((_ data: Data?, _ status: Int, _ error: Error?) -> Void)?) {
-        var request = URLRequest(url: url, cachePolicy: .reloadRevalidatingCacheData, timeoutInterval: 120)
-        request.httpMethod = (method == .none) ? nil : method.rawValue
-        if let body = body {
-            request.httpBody = body
+    enum SafeSearchLevels: String {
+        case none = "none"
+        case moderate = "moderate"
+        case strict = "strict"
+    }
+    
+    var type = ResultTypes.video
+    var sort = SearchSorts.relevance
+    var safeSearchLevel = SafeSearchLevels.none
+    var maxResults = 5
+    var pageToken: String?
+    var relatedToVideo: String? {
+        didSet {
+            type = .video
         }
-        for field in fields ?? [] {
-            request.addValue(field.value, forHTTPHeaderField: field.header)
-        }
-        
-        let session = URLSession(configuration: .default)
-        let task = session.dataTask(with: request) { (data, response, error) in
-            DispatchQueue.main.async {
-                completion?(data, (response as? HTTPURLResponse)?.statusCode ?? -1, error)
+    }
+    
+    var query: String?
+    
+    convenience init(type: ResultTypes) {
+        self.init()
+        self.type = type
+    }
+    
+    override func getInfo(_ completion: @escaping (() -> Void)) {
+        super.getInfo(completion)
+        if query != nil || relatedToVideo != nil {
+            var urlString = "https://www.googleapis.com/youtube/v3/search?part=snippet"
+            urlString.append("&type=\(type)")
+            urlString.append("&order=\(sort)")
+            urlString.append("&safeSearch=\(safeSearchLevel)")
+            urlString.append("&maxResults=\(maxResults)")
+            urlString.append("&regionCode=US")
+            urlString.append((pageToken != nil) ? "&pageToken=\(pageToken!)" : "")
+            urlString.append((relatedToVideo != nil) ? "&relatedToVideoId=\(relatedToVideo!)" : "")
+            urlString.append((query != nil) ? "&q=\(query!.withUrlPercentEncoding()!)" : "")
+            url = URL(string: urlString)
+            
+            performGetRequest(targetURL: url) { (data, status, error) in
+                if let error = error {
+                    print(error)
+                }
+                if status != 200 {
+                    print("ytsearch return http status \(status)")
+                }
+                var json = Dictionary<AnyHashable, Any>()
+                if let data = data {
+                    do {
+                        json = try JSONSerialization.jsonObject(with: data, options: []) as! [AnyHashable: Any]
+                    } catch {
+                        print("ytsearch encountered an error serializing json data")
+                    }
+                }
+                let response = GTLRYouTube_SearchListResponse(json: json)
+                self.data = response
+                if let items = response.items {
+                    for item in items {
+                        switch self.type {
+                        case .channel:
+                            self.resultIds.append(item.identifier?.channelId ?? "")
+                        case .video:
+                            self.resultIds.append(item.identifier?.videoId ?? "")
+                        case .playlist:
+                            self.resultIds.append(item.identifier?.playlistId ?? "")
+                        }
+                    }
+                }
+                DispatchQueue.main.async {
+                    completion()
+                }
             }
         }
-        
+    }
+    
+    var nextPageToken: String? {
+        return data.nextPageToken
+    }
+    
+    var previousPageToken: String? {
+        return data.prevPageToken
+    }
+    
+}
+
+class YTChannel: YTCore {
+    
+    var data = GTLRYouTube_Channel()
+    
+    enum Parts: String {
+        case snippet = "snippet"
+        case contents = "contentDetails"
+        case statistics = "statistics"
+        case branding = "brandingSettings"
+    }
+    
+    var parts: [Parts]?
+    
+    var username: String?
+    
+    var title: String? {
+        return data.snippet?.title
+    }
+    
+    var description: String? {
+        return data.snippet?.descriptionProperty
+    }
+    
+    var subscribers: NSNumber? {
+        return data.statistics?.subscriberCount
+    }
+    
+    var videoCount: NSNumber? {
+        return data.statistics?.videoCount
+    }
+    
+    var viewCount: NSNumber? {
+        return data.statistics?.viewCount
+    }
+    
+    var uploadsPlaylistID: String? {
+        return data.contentDetails?.relatedPlaylists?.uploads
+    }
+    
+    var featuredVideoID: String? {
+        return data.brandingSettings?.channel?.unsubscribedTrailer
+    }
+    
+    func subscribe(_ completion: (() -> Void)?) {
+        let urlString = "https://www.googleapis.com/youtube/v3/subscriptions?part=snippet"
+        let json: [String: Any] = ["snippet": [
+                                        "resourceId":
+                                                    ["kind": "youtube#channel",
+                                                    "channelId": identifier]
+            ]
+        ]
+        let data = try? JSONSerialization.data(withJSONObject: json)
+        performPostRequest(targetURL: URL(string: urlString), headers: [.init(value: "application/json", header: "Accept"), .init(value: "application/json", header: "Content-Type")], body: data) { (status, error) in
+            if let error = error {
+                print(error)
+            } else {
+                completion?()
+                NotificationCenter.default.post(name: .subscriptionsChanged, object: nil)
+            }
+        }
+    }
+    
+    func unsubscribe(_ completion: (() -> Void)?) {
+        let urlString = "https://www.googleapis.com/youtube/v3/subscriptions?id=\(identifier)"
+        let session = URLSession(configuration: .default)
+        let url = URL(string: urlString)
+        var request = URLRequest(url: url!)
+        request.httpMethod = "DELETE"
+        if let userToken = settings.userAccessToken {
+            request.addValue("Bearer \(userToken)", forHTTPHeaderField: "Authorization")
+        }
+        let task = session.dataTask(with: request) { (data: Data!, response: URLResponse!, error: Error!) in
+            DispatchQueue.global(qos: .default).async {
+                let status = (response as! HTTPURLResponse?)?.statusCode ?? -1
+                if status != 204 {
+                    print("deleting subscription returned http status \(status)")
+                }
+                if let error = error {
+                    print(error)
+                } else {
+                    completion?()
+                    NotificationCenter.default.post(name: .subscriptionsChanged, object: nil)
+                }
+            }
+        }
         task.resume()
     }
     
-    static func downloadImage(url: URL, _ completion: ((_ image: UIImage?) -> Void)?) {
-        var newUrl = URL(string: url.absoluteString)
-        if !url.absoluteString.contains("https") {
-            newUrl = URL(string: "https:\(url.absoluteString)")
+    func getAvatar(_ completion: @escaping (_ image: UIImage?) -> Void) {
+        getAvatar(quality: .standard) { (image) in
+            completion(image)
         }
-        performHTTPRequest(url: newUrl, method: .none, body: nil, fields: nil) { (data, status, error) in
-            var image: UIImage?
-            if let error = error {
-                print("error downloading image: \(error.localizedDescription)")
-                print(newUrl ?? "no image url")
-            } else {
+    }
+    
+    enum AvatarQuality {
+        case standard
+        case medium
+        case high
+    }
+    
+    func getAvatar(quality: AvatarQuality, _ completion: @escaping (_ image: UIImage?) -> Void) {
+        let standardURL = data.snippet?.thumbnails?.defaultProperty?.url
+        let mediumURL = data.snippet?.thumbnails?.medium?.url
+        let highURL = data.snippet?.thumbnails?.high?.url
+        var urlString = ""
+        switch quality {
+        case .standard:
+            urlString = data.snippet?.thumbnails?.defaultProperty?.url ?? ""
+        case .medium:
+            urlString = mediumURL ?? standardURL ?? ""
+        case .high:
+            urlString = highURL ?? mediumURL ?? standardURL ?? ""
+        }
+        if let url = URL(string: urlString) {
+            downloadImage(targetURL: url) { (data, status, error) in
+                if let error = error {
+                    print(error)
+                }
+                if status != 200 {
+                    print("avatar image download failed with code \(status)")
+                }
+                var image: UIImage?
                 if let data = data {
                     image = UIImage(data: data)
+                } else {
+                    image = nil
+                }
+                DispatchQueue.main.async {
+                    completion(image)
+                }
+            }
+        }
+    }
+    
+    func getBanner(_ completion: @escaping (_ image: UIImage?) -> Void) {
+        if let url = URL(string: data.brandingSettings?.image?.bannerMobileMediumHdImageUrl ?? "") {
+            downloadImage(targetURL: url) { (data, status, error) in
+                if let error = error {
+                    print(error)
+                }
+                if status != 200 {
+                    print("banner image download failed with code \(status)")
+                }
+                var image: UIImage?
+                if let data = data {
+                    image = UIImage(data: data)
+                } else {
+                    image = nil
+                }
+                DispatchQueue.main.async {
+                    completion(image)
+                }
+            }
+        }
+    }
+    
+    override func getInfo(_ completion: @escaping (() -> Void)) {
+        super.getInfo(completion)
+        if (username != nil || identifier != "") && parts != nil {
+            var urlString = "https://www.googleapis.com/youtube/v3/channels?part="
+            
+            for (i, part) in parts!.enumerated() {
+                urlString.append((i != 0) ? "," : "")
+                urlString.append(part.rawValue)
+            }
+            
+            urlString.append((username != nil) ? "&forUsername=\(username!)" : "&id=\(identifier)")
+            url = URL(string: urlString)
+            
+            performGetRequest(targetURL: url) { (data, status, error) in
+                if let error = error {
+                    print(error)
+                }
+                if status != 200 {
+                    print("error: ytchannel returned http status \(status)")
+                    if status == 503 {
+                        print("the quota for this api key has likely expired for today")
+                    }
+                }
+                
+                var json = [AnyHashable: Any]()
+                if let data = data {
+                    do {
+                        json = try JSONSerialization.jsonObject(with: data, options: []) as! [AnyHashable: Any]
+                    } catch {
+                        print("error: ytchannel failed to serialize json")
+                    }
+                } else {
+                    print("error: ytchannel get request failed")
+                }
+                
+                let response = GTLRYouTube_ChannelListResponse(json: json)
+                if let items = response.items {
+                    if items.count > 0 {
+                        self.data = items[0]
+                    }
+                }
+                
+                DispatchQueue.main.async {
+                    completion()
+                }
+            }
+        }
+    }
+    
+}
+
+class YTPlaylist: YTCore {
+    
+    var data = GTLRYouTube_Playlist()
+    var contents: [YTVideo]?
+    var parts: [Parts]?
+    var maxResults = 5
+    
+    enum Parts: String {
+        case snippet = "snippet"
+        case contents = "contentDetails"
+    }
+    
+    var pageToken: String?
+    private(set) var nextPageToken: String?
+    private(set) var previousPageToken: String?
+
+    var title: String? {
+        return data.snippet?.title
+    }
+    
+    var uploadDate: Date? {
+        return data.snippet?.publishedAt?.date
+    }
+    
+    var parentChannelTitle: String? {
+        return data.snippet?.channelTitle
+    }
+
+    var parentChannelID: String? {
+        return data.snippet?.channelId
+    }
+    
+    var length: Int? {
+        return data.contentDetails?.itemCount?.intValue
+    }
+    
+    override func getInfo(_ completion: @escaping (() -> Void)) {
+        super.getInfo(completion)
+        if identifier != "" && parts != nil {
+            var urlString = "https://www.googleapis.com/youtube/v3/playlists?part="
+            
+            for (i, part) in parts!.enumerated() {
+                urlString.append((i != 0) ? "," : "")
+                urlString.append(part.rawValue)
+            }
+            
+            urlString.append("&id=\(identifier)")
+            url = URL(string: urlString)
+            
+            performGetRequest(targetURL: url) { (data, status, error) in
+                if let error = error {
+                    print(error)
+                }
+                if status != 200 {
+                    print("error: ytplaylist returned http status \(status)")
+                    if status == 503 {
+                        print("the quota for this api key has likely expired for today")
+                    }
+                }
+                
+                var json = [AnyHashable: Any]()
+                if let data = data {
+                    do {
+                        json = try JSONSerialization.jsonObject(with: data, options: []) as! [AnyHashable: Any]
+                    } catch {
+                        print("error: ytplaylist failed to serialize json")
+                    }
+                } else {
+                    print("error: ytplaylist get request failed")
+                }
+                
+                let response = GTLRYouTube_PlaylistListResponse(json: json)
+                if let items = response.items {
+                    if items.count > 0 {
+                        self.data = items[0]
+                    }
+                }
+                
+                DispatchQueue.main.async {
+                    completion()
+                }
+            }
+        }
+    }
+    
+    func getContents(_ completion: @escaping (() -> Void)) {
+        if identifier != "" {
+            var urlString = "https://www.googleapis.com/youtube/v3/playlistItems?part=contentDetails"
+            urlString.append("&maxResults=\(maxResults)")
+            urlString.append("&playlistId=\(identifier)")
+            urlString.append((pageToken != nil) ? "&pageToken=\(pageToken!)" : "")
+            
+            url = URL(string: urlString)
+            
+            performGetRequest(targetURL: url) { (data, status, error) in
+                if let error = error {
+                    print(error)
+                }
+                
+                if status != 200 {
+                    print("error: ytplaylist contents returned http status \(status)")
+                    if status == 503 {
+                        print("the quota for this api key has likely expired for today")
+                    }
+                }
+                
+                var json = [AnyHashable: Any]()
+                if let data = data {
+                    do {
+                        json = try JSONSerialization.jsonObject(with: data, options: []) as! [AnyHashable: Any]
+                    } catch {
+                        print("error: ytplaylist contents failed to serialize json")
+                    }
+                } else {
+                    print("error: ytplaylist contents get request failed")
+                }
+                
+                let response = GTLRYouTube_PlaylistItemListResponse(json: json)
+                self.nextPageToken = response.nextPageToken
+                self.previousPageToken = response.prevPageToken
+                if let items = response.items {
+                    self.contents = [YTVideo]()
+                    for item in items {
+                        let video = YTVideo(identifier: item.contentDetails?.videoId ?? "")
+                        self.contents!.append(video)
+                    }
+                }
+                
+                DispatchQueue.main.async {
+                    completion()
+                }
+            }
+        }
+    }
+    
+    func getThumbnail(_ completion: @escaping (_ image: UIImage?) -> Void) {
+        var imageURL: URL?
+        if let url = URL(string: data.snippet?.thumbnails?.standard?.url ?? "") {
+            imageURL = url
+        } else if let url = URL(string: data.snippet?.thumbnails?.medium?.url ?? "") {
+            imageURL = url
+        }
+        if let url = imageURL {
+            downloadImage(targetURL: url) { (data, status, error) in
+                if let error = error {
+                    print(error)
+                }
+                if status != 200 {
+                    print("image download failed with code \(status)")
+                }
+                var image: UIImage?
+                if let data = data {
+                    image = UIImage(data: data)
+                } else {
+                    image = nil
+                }
+                DispatchQueue.main.async {
+                    completion(image)
+                }
+            }
+        } else if let url = URL(string: data.snippet?.thumbnails?.standard?.url ?? "") {
+            downloadImage(targetURL: url) { (data, status, error) in
+                if let error = error {
+                    print(error)
+                }
+                if status != 200 {
+                    print("image download failed with code \(status)")
+                }
+                var image: UIImage?
+                if let data = data {
+                    image = UIImage(data: data)
+                } else {
+                    image = nil
+                }
+                DispatchQueue.main.async {
+                    completion(image)
+                }
+            }
+        }
+    }
+
+}
+
+class YTVideo: YTCore {
+    
+    var data = GTLRYouTube_Video()
+    var listResponse = GTLRYouTube_VideoListResponse()
+    var list = [YTVideo]()
+    
+    var identifierArray: [String]?
+    var parts: [Parts]?
+    var popularVideos = false
+    var maxResults = 5
+    
+    enum Parts: String {
+        case snippet = "snippet"
+        case contents = "contentDetails"
+        case statistics = "statistics"
+    }
+    
+    var pageToken: String?
+    private(set) var nextPageToken: String?
+    private(set) var previousPageToken: String?
+    
+    var totalResults: Int? {
+        return listResponse.pageInfo?.totalResults?.intValue
+    }
+    
+    var channelID: String? {
+        return data.snippet?.channelId
+    }
+    
+    var title: String? {
+        return data.snippet?.localized?.title
+    }
+    
+    var description: String? {
+        return data.snippet?.descriptionProperty
+    }
+    
+    var channelName: String? {
+        return data.snippet?.channelTitle
+    }
+    
+    var thumbnails: GTLRYouTube_ThumbnailDetails? {
+        return data.snippet?.thumbnails
+    }
+    
+    var views: NSNumber? {
+        return data.statistics?.viewCount
+    }
+    
+    var likes: NSNumber? {
+        return data.statistics?.likeCount
+    }
+    
+    var dislikes: NSNumber? {
+        return data.statistics?.dislikeCount
+    }
+    
+    var category: String? {
+        return data.snippet?.categoryId
+    }
+    
+    var uploadDate: Date? {
+        return data.snippet?.publishedAt?.date
+    }
+    
+    var length: Int? {
+        return listResponse.pageInfo?.totalResults?.intValue
+    }
+    
+    enum VideoRatings: String {
+        case liked = "like"
+        case disliked = "dislike"
+        case noRating = "none"
+    }
+
+    func setRating(_ rating: VideoRatings, _ completion: @escaping (() -> Void)) {
+        let url = URL(string: "https://www.googleapis.com/youtube/v3/videos/rate?id=\(identifier)&rating=\(rating.rawValue)")!
+        performPostRequest(targetURL: url, headers: nil, body: nil, completion: { (status, error) in
+            if let error = error {
+                print("error rating video \"\(self.title ?? "")\": \(error)")
+            }
+            
+            if status != 204 {
+                print("video rating returned status \(status)")
+            }
+            
+            completion()
+        })
+    }
+    
+    func getRating(_ completion: @escaping ((_ rating: VideoRatings?) -> Void)) {
+        let url = URL(string: "https://www.googleapis.com/youtube/v3/videos/getRating?id=\(identifier)")
+        performGetRequest(targetURL: url) { (data, status, error) in
+            if let error = error {
+                print("error getting rating for video \(self.title ?? ""): \(error)")
+            }
+            
+            if status != 200 {
+                print("getting video rating returned status \(status)")
+            }
+            
+            if let data = data {
+                var json = [AnyHashable: Any]()
+                do {
+                    try json = JSONSerialization.jsonObject(with: data, options: []) as! [AnyHashable: Any]
+                } catch {
+                    print("error serializing json data for video rating")
+                }
+                let response = GTLRYouTube_VideoGetRatingResponse(json: json)
+                switch response.items?.first?.rating {
+                case "like":
+                    completion(.liked)
+                case "dislike":
+                    completion(.disliked)
+                case "none":
+                    completion(.noRating)
+                default:
+                    completion(nil)
+                }
+            } else {
+                completion(nil)
+            }
+        }
+    }
+    
+    var duration: TimeInterval? {
+        if let formattedDuration = data.contentDetails?.duration {
+            let index = formattedDuration.index(formattedDuration.startIndex, offsetBy: 2)
+            let endIndex = formattedDuration.index(formattedDuration.endIndex, offsetBy: -1)
+            let substring = formattedDuration[index...endIndex]
+            
+            var string = String(substring)
+            if !(string.contains("S")) {
+                string = "0S\(string)"
+            }
+            if !(string.contains("M")) {
+                string = "0M\(string)"
+            }
+            if !(string.contains("H")) {
+                string = "0H\(string)"
+            }
+            string = string.replacingOccurrences(of: "H", with: ":")
+            string = string.replacingOccurrences(of: "M", with: ":")
+            string = string.replacingOccurrences(of: "S", with: "")
+            
+            return parseDuration(string)
+        } else {
+            return nil
+        }
+    }
+    
+    struct Duration {
+        var seconds: Int
+        var minutes: Int
+        var hours: Int
+        var days: Int
+    }
+    
+    private func parseDuration(_ timeString:String) -> TimeInterval {
+        guard !timeString.isEmpty else {
+            return 0
+        }
+        
+        var interval: Double = 0
+        
+        let parts = timeString.components(separatedBy: ":")
+        for (index, part) in parts.reversed().enumerated() {
+            interval += (Double(part) ?? 0) * pow(Double(60), Double(index))
+        }
+        
+        return interval
+    }
+    
+    override func getInfo(_ completion: @escaping (() -> Void)) {
+        super.getInfo(completion)
+        if (identifier != "" || popularVideos || identifierArray != nil) && parts != nil {
+            var urlString = "https://www.googleapis.com/youtube/v3/videos?parts="
+            if let parts = parts {
+                for (i, part) in parts.enumerated() {
+                    urlString.append((i == 0) ? "&part=" : ",")
+                    urlString.append(part.rawValue)
+                }
+            }
+            
+            if identifier != "" {
+                urlString.append("&id=\(identifier)")
+            } else if let identifierArray = identifierArray {
+                for (i, identifier) in identifierArray.enumerated() {
+                    urlString.append((i == 0) ? "&id=" : ",")
+                    urlString.append(identifier)
+                }
+            } else if popularVideos {
+                urlString.append("&chart=mostPopular")
+                urlString.append("&maxResults=\(maxResults)")
+                if let pageToken = pageToken {
+                    urlString.append("&pageToken=\(pageToken)")
+                }
+            }
+            url = URL(string: urlString)
+            performGetRequest(targetURL: url) { (data, status, error) in
+                if let error = error {
+                    print(error)
+                }
+                
+                if status != 200 {
+                    print("error: ytvideo returned http status \(status)")
+                    if status == 503 {
+                        print("the quota for this api key has likely expired for today")
+                    }
+                }
+                
+                var json = [AnyHashable: Any]()
+                if let data = data {
+                    do {
+                        try json = JSONSerialization.jsonObject(with: data, options: []) as! [AnyHashable: Any]
+                    } catch {
+                        print("error: ytvideo failed to serialize json")
+                    }
+                } else {
+                    print("error: ytvideo get request failed")
+                }
+                
+                let response = GTLRYouTube_VideoListResponse(json: json)
+                self.nextPageToken = response.nextPageToken
+                self.previousPageToken = response.prevPageToken
+                self.listResponse = response
+                if let items = response.items {
+                    if self.popularVideos || (self.identifierArray?.count != 0 && self.identifierArray != nil) {
+                        for item in items {
+                            let video = YTVideo(identifier: item.identifier ?? "")
+                            video.data = item
+                            video.parts = self.parts
+                            self.list.append(video)
+                        }
+                    } else {
+                        self.data = items[0]
+                        self.identifier = self.data.identifier ?? ""
+                    }
+                } else {
+                    print("error: ytvideo get request returned nothing")
+                }
+                
+                DispatchQueue.main.async {
+                    completion()
+                }
+            }
+        }
+    }
+    
+    func getThumbnail(_ completion: @escaping (_ image: UIImage?) -> Void) {
+        var imageURL: URL?
+        if let url = URL(string: data.snippet?.thumbnails?.standard?.url ?? "") {
+            imageURL = url
+        } else if let url = URL(string: data.snippet?.thumbnails?.medium?.url ?? "") {
+            imageURL = url
+        }
+        if let url = imageURL {
+            downloadImage(targetURL: url) { (data, status, error) in
+                if let error = error {
+                    print(error)
+                }
+                if status != 200 {
+                    print("image download failed with code \(status)")
+                }
+                var image: UIImage?
+                if let data = data {
+                    image = UIImage(data: data)
+                } else {
+                    image = nil
+                }
+                DispatchQueue.main.async {
+                    completion(image)
+                }
+            }
+        } else if let url = URL(string: data.snippet?.thumbnails?.standard?.url ?? "") {
+            downloadImage(targetURL: url) { (data, status, error) in
+                if let error = error {
+                    print(error)
+                }
+                if status != 200 {
+                    print("image download failed with code \(status)")
+                }
+                var image: UIImage?
+                if let data = data {
+                    image = UIImage(data: data)
+                } else {
+                    image = nil
+                }
+                DispatchQueue.main.async {
+                    completion(image)
+                }
+            }
+        }
+    }
+
+}
+
+class YTSubscriptions: YTCore {
+    
+    var list = [YTChannel]()
+    
+    enum Sorts: String {
+        case alphabetical = "alphabetical"
+        case relevance = "relevance"
+        case newest = "unread"
+    }
+    
+    var sort = Sorts.alphabetical
+
+    func subscribe(identifier: String) {
+        YTChannel(identifier: identifier).subscribe(nil)
+    }
+    
+    func unsubscribe(identifier: String) {
+        YTChannel(identifier: identifier).unsubscribe(nil)
+    }
+
+    var maxResults = 5
+
+    func getSubscriptions(_ completion: @escaping () -> Void) {
+        let url = URL(string: "https://www.googleapis.com/youtube/v3/subscriptions&id=\(identifier)?part=snippet&sort=\(sort.rawValue)&maxResults=\(maxResults)")
+        performGetRequest(targetURL: url) { (data, status, error) in
+            if let error = error {
+                print(error)
+            }
+            
+            if status != 200 {
+                print(status)
+            }
+            
+            if let data = data {
+                var json = [AnyHashable: Any]()
+                do {
+                    try json = JSONSerialization.jsonObject(with: data, options: []) as! [AnyHashable: Any]
+                } catch {
+                    print("error serializing json for subscriptions")
+                }
+                let response = GTLRYouTube_SubscriptionListResponse(json: json)
+                if let items = response.items {
+                    for item in items {
+                        if let id = item.snippet?.channelId {
+                            self.list.append(YTChannel(identifier: id))
+                        }
+                    }
                 }
             }
             
             DispatchQueue.main.async {
-                completion?(image)
+                completion()
             }
         }
     }
-    
+
+    func getUserSubscriptions(_ completion: @escaping () -> Void) {
+        let url = URL(string: "https://www.googleapis.com/youtube/v3/subscriptions?part=snippet&mine=true&sort=\(sort.rawValue)&maxResults=50")
+        performGetRequest(targetURL: url) { (data, status, error) in
+            if let error = error {
+                print("user subscriptions returned error \(error)")
+            }
+            
+            if status != 200 {
+                print("user subscriptions returned http status \(status)")
+            }
+            
+            if let data = data {
+                var json = [AnyHashable: Any]()
+                do {
+                    try json = JSONSerialization.jsonObject(with: data, options: []) as! [AnyHashable: Any]
+                } catch {
+                    print("error serializing json for subscriptions")
+                }
+                let response = GTLRYouTube_SubscriptionListResponse(json: json)
+                if let items = response.items {
+                    for item in items {
+                        if let id = item.snippet?.resourceId?.channelId {
+                            self.list.append(YTChannel(identifier: id))
+                        }
+                    }
+                }
+            }
+            
+            DispatchQueue.main.async {
+                completion()
+            }
+        }
+    }
 }

@@ -1,0 +1,29 @@
+Announcing Hermes, a sleek and smooth iOS app for YouTube.
+
+Hey guys!
+
+For about 6 months now, I've been developing a brand-new YouTube app and I think it's at the stage where I can announce it to everyone. I call it Hermes.
+
+I've been using YouTube since around 2009, and I've always enjoyed taking part in the community and watching videos. YouTube is almost essential for the internet imo, and I wanted to make an app that reflects that. I don't have a ton of experience programming for iOS (in fact, this is my first fully-fledged app), but I've poured a ton of work into this and I'm pretty proud of how it's coming.
+
+I wanted to put a big emphasis on making the experience as easy and comfortable as possible, with smooth gestures, lots of customization, and an experience that fits right in with iOS.
+
+Plus, it has a dark mode, no ads, and background play.
+
+[Here's a few screenshots.](screenshots)
+
+It's not quite feature-complete and a while away from being launch-ready, but I'd like to get some input from the Reddit community to see what you guys want in a YouTube app.
+
+#FAQ
+
+**Is this allowed by YouTube?**
+
+It's in a bit of a gray area, but there are a few other apps that made it onto the App Store without any pushback, so I'm leaning towards "yes."
+
+**Will there be a beta?**
+
+I'd like there to be! Unfortunately, I'm a broke high school student, but I should be able to scrape together enough money to get into the developer program and submit it.
+
+**Is it really ad-free?**
+
+Yep! Even if I wanted to add ads, the YouTube API doesn't support them, so it's pretty much impossible.
