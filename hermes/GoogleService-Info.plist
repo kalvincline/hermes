@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>60942394550-auudr87489l2052ktetai16lr99p0n33.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.60942394550-auudr87489l2052ktetai16lr99p0n33</string>
+	<key>API_KEY</key>
+	<string>AIzaSyA48G719JMjPFSxRsL2X5WcaJLNrDCC0HM</string>
+	<key>GCM_SENDER_ID</key>
+	<string>60942394550</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.aidancline.hermesforyoutube</string>
+	<key>PROJECT_ID</key>
+	<string>hermes-for-youtube</string>
+	<key>STORAGE_BUCKET</key>
+	<string>hermes-for-youtube.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:60942394550:ios:e2cc986ef762f22c</string>
+	<key>DATABASE_URL</key>
+	<string>https://hermes-for.firebaseio.com</string>
+</dict>
+</plist>
