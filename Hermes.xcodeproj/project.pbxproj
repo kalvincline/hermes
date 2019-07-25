@@ -1,0 +1,432 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 50;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		619298C237527E1ADA571185 /* Pods_hermesforyoutube.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D722C98C989FC440D1CB169D /* Pods_hermesforyoutube.framework */; };
+		AF0E5FD922E92AA2003D09DF /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF0E5FD822E92AA2003D09DF /* AppDelegate.swift */; };
+		AF0E5FDB22E92AA2003D09DF /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF0E5FDA22E92AA2003D09DF /* ViewController.swift */; };
+		AF0E5FDE22E92AA2003D09DF /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AF0E5FDC22E92AA2003D09DF /* Main.storyboard */; };
+		AF0E5FE022E92AAB003D09DF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AF0E5FDF22E92AAB003D09DF /* Assets.xcassets */; };
+		AF0E5FE322E92AAB003D09DF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AF0E5FE122E92AAB003D09DF /* LaunchScreen.storyboard */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		8A4C3649EB01CD3AFD5729A4 /* Pods-hermesforyoutube.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-hermesforyoutube.debug.xcconfig"; path = "Target Support Files/Pods-hermesforyoutube/Pods-hermesforyoutube.debug.xcconfig"; sourceTree = "<group>"; };
+		A2794C4AA6DFD24D233022FD /* Pods-hermesforyoutube.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-hermesforyoutube.release.xcconfig"; path = "Target Support Files/Pods-hermesforyoutube/Pods-hermesforyoutube.release.xcconfig"; sourceTree = "<group>"; };
+		AF0E5FD522E92AA2003D09DF /* hermesforyoutube.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = hermesforyoutube.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		AF0E5FD822E92AA2003D09DF /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		AF0E5FDA22E92AA2003D09DF /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		AF0E5FDD22E92AA2003D09DF /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		AF0E5FDF22E92AAB003D09DF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		AF0E5FE222E92AAB003D09DF /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		AF0E5FE422E92AAB003D09DF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		D722C98C989FC440D1CB169D /* Pods_hermesforyoutube.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_hermesforyoutube.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		AF0E5FD222E92AA2003D09DF /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				619298C237527E1ADA571185 /* Pods_hermesforyoutube.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		4444DABD1544D46CC0CEA029 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				8A4C3649EB01CD3AFD5729A4 /* Pods-hermesforyoutube.debug.xcconfig */,
+				A2794C4AA6DFD24D233022FD /* Pods-hermesforyoutube.release.xcconfig */,
+			);
+			name = Pods;
+			path = Pods;
+			sourceTree = "<group>";
+		};
+		82523CF90E846DEFFE315FA0 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				D722C98C989FC440D1CB169D /* Pods_hermesforyoutube.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		AF0E5FCC22E92AA2003D09DF = {
+			isa = PBXGroup;
+			children = (
+				AF0E5FD722E92AA2003D09DF /* hermes */,
+				AF0E5FD622E92AA2003D09DF /* Products */,
+				4444DABD1544D46CC0CEA029 /* Pods */,
+				82523CF90E846DEFFE315FA0 /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		AF0E5FD622E92AA2003D09DF /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				AF0E5FD522E92AA2003D09DF /* hermesforyoutube.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		AF0E5FD722E92AA2003D09DF /* hermes */ = {
+			isa = PBXGroup;
+			children = (
+				AF0E5FD822E92AA2003D09DF /* AppDelegate.swift */,
+				AF0E5FDA22E92AA2003D09DF /* ViewController.swift */,
+				AF0E5FDC22E92AA2003D09DF /* Main.storyboard */,
+				AF0E5FDF22E92AAB003D09DF /* Assets.xcassets */,
+				AF0E5FE122E92AAB003D09DF /* LaunchScreen.storyboard */,
+				AF0E5FE422E92AAB003D09DF /* Info.plist */,
+			);
+			path = hermes;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		AF0E5FD422E92AA2003D09DF /* hermesforyoutube */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = AF0E5FE722E92AAB003D09DF /* Build configuration list for PBXNativeTarget "hermesforyoutube" */;
+			buildPhases = (
+				F2F497F4CB29CE9D152E2956 /* [CP] Check Pods Manifest.lock */,
+				AF0E5FD122E92AA2003D09DF /* Sources */,
+				AF0E5FD222E92AA2003D09DF /* Frameworks */,
+				AF0E5FD322E92AA2003D09DF /* Resources */,
+				D7595CCF44FA73EFD22532C8 /* [CP] Embed Pods Frameworks */,
+				A12A9897D0A51675951C0724 /* [CP] Copy Pods Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = hermesforyoutube;
+			productName = hermesforyoutube;
+			productReference = AF0E5FD522E92AA2003D09DF /* hermesforyoutube.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		AF0E5FCD22E92AA2003D09DF /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 1020;
+				LastUpgradeCheck = 1020;
+				ORGANIZATIONNAME = "Aidan Cline";
+				TargetAttributes = {
+					AF0E5FD422E92AA2003D09DF = {
+						CreatedOnToolsVersion = 10.2.1;
+					};
+				};
+			};
+			buildConfigurationList = AF0E5FD022E92AA2003D09DF /* Build configuration list for PBXProject "Hermes" */;
+			compatibilityVersion = "Xcode 9.3";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = AF0E5FCC22E92AA2003D09DF;
+			productRefGroup = AF0E5FD622E92AA2003D09DF /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				AF0E5FD422E92AA2003D09DF /* hermesforyoutube */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		AF0E5FD322E92AA2003D09DF /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AF0E5FE322E92AAB003D09DF /* LaunchScreen.storyboard in Resources */,
+				AF0E5FE022E92AAB003D09DF /* Assets.xcassets in Resources */,
+				AF0E5FDE22E92AA2003D09DF /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		A12A9897D0A51675951C0724 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-hermesforyoutube/Pods-hermesforyoutube-resources-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-hermesforyoutube/Pods-hermesforyoutube-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-hermesforyoutube/Pods-hermesforyoutube-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		D7595CCF44FA73EFD22532C8 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-hermesforyoutube/Pods-hermesforyoutube-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-hermesforyoutube/Pods-hermesforyoutube-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-hermesforyoutube/Pods-hermesforyoutube-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		F2F497F4CB29CE9D152E2956 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-hermesforyoutube-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		AF0E5FD122E92AA2003D09DF /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AF0E5FDB22E92AA2003D09DF /* ViewController.swift in Sources */,
+				AF0E5FD922E92AA2003D09DF /* AppDelegate.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		AF0E5FDC22E92AA2003D09DF /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				AF0E5FDD22E92AA2003D09DF /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		AF0E5FE122E92AAB003D09DF /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				AF0E5FE222E92AAB003D09DF /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		AF0E5FE522E92AAB003D09DF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.2;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		AF0E5FE622E92AAB003D09DF /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.2;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		AF0E5FE822E92AAB003D09DF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 8A4C3649EB01CD3AFD5729A4 /* Pods-hermesforyoutube.debug.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 876K476XMT;
+				INFOPLIST_FILE = hermesforyoutube/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.aidancline.hermesforyoutube;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		AF0E5FE922E92AAB003D09DF /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = A2794C4AA6DFD24D233022FD /* Pods-hermesforyoutube.release.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 876K476XMT;
+				INFOPLIST_FILE = hermesforyoutube/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.aidancline.hermesforyoutube;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		AF0E5FD022E92AA2003D09DF /* Build configuration list for PBXProject "Hermes" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AF0E5FE522E92AAB003D09DF /* Debug */,
+				AF0E5FE622E92AAB003D09DF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		AF0E5FE722E92AAB003D09DF /* Build configuration list for PBXNativeTarget "hermesforyoutube" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AF0E5FE822E92AAB003D09DF /* Debug */,
+				AF0E5FE922E92AAB003D09DF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = AF0E5FCD22E92AA2003D09DF /* Project object */;
+}
