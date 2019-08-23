@@ -1,8 +1,0 @@
-platform :ios, '12.0'
-use_frameworks!
-target 'Hermes for YouTube' do
-    pod 'GoogleAPIClientForREST/YouTube', '~> 1.2.1'
-    pod 'Google/SignIn', '~> 3.0.3'
-    pod 'NewPopMenu', '~> 2.0'
-    pod 'SwiftyStoreKit'
-end
