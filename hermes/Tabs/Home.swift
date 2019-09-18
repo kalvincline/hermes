@@ -19,6 +19,7 @@ class HomeViewController: UINavigationController {
 class HomeRoot: TemplateViewController, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource {
     
     var trendingVideos: [InvidiousVideo] = []
+    let refreshControl = UIRefreshControl()
     var mainView: UICollectionView {
         return contentView as! UICollectionView
     }
@@ -26,8 +27,7 @@ class HomeRoot: TemplateViewController, UICollectionViewDelegateFlowLayout, UICo
     override func viewDidLoad() {
         super.viewDidLoad()
         let layout = UICollectionViewFlowLayout()
-        layout.sectionInset = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16)
-        layout.itemSize = CGSize(width: view.frame.width, height: view.frame.width * 9/16 + 60)
+        layout.sectionInset = UIEdgeInsets(top: 8, left: 0, bottom: 8, right: 0)
         
         contentView = UICollectionView(frame: self.view.frame, collectionViewLayout: layout)
         mainView.dataSource = self
@@ -36,12 +36,20 @@ class HomeRoot: TemplateViewController, UICollectionViewDelegateFlowLayout, UICo
         mainView.backgroundColor = .clear
         mainView.contentInset.top = 96
         mainView.contentInset.bottom = 50
+        mainView.refreshControl = refreshControl
+        mainView.alwaysBounceVertical = true
+        refreshControl.addTarget(self, action: #selector(self.loadData), for: .primaryActionTriggered)
         title = "Home"
         
+        loadData()
+    }
+    
+    @objc func loadData() {
         let videoRequest = InvidiousTrending()
         videoRequest.getData {
             self.trendingVideos = videoRequest.videos ?? []
             self.mainView.reloadData()
+            self.refreshControl.endRefreshing()
         }
     }
     
@@ -55,48 +63,27 @@ class HomeRoot: TemplateViewController, UICollectionViewDelegateFlowLayout, UICo
         return videoCell
     }
     
-}
-
-/*class HomeRoot: TemplateViewController, UITableViewDelegate, UITableViewDataSource {
-    
-    var trendingVideos: [InvidiousVideo] = []
-    var mainView: UITableView {
-        return contentView as! UITableView
-    }
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        contentView = UITableView()
-        mainView.clipsToBounds = false
-        mainView.backgroundColor = .clear
-        mainView.delegate = self
-        mainView.dataSource = self
-        mainView.frame = view.bounds
-        mainView.contentInset = .init(top: 96, left: 0, bottom: 50, right: 0)
-        mainView.register(LargeVideoCell.self, forCellReuseIdentifier: "video")
-        mainView.separatorStyle = .none
-        mainView.allowsSelection = false
-        mainView.rowHeight = 150 + 16
-        title = "Home"
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        let videosPerRow = limit(Int(view.frame.width / 400), min: 1)
+        let width = CGFloat(Int(view.frame.width / CGFloat(videosPerRow)))
         
-        let videoRequest = InvidiousTrending()
-        videoRequest.getData {
-            self.trendingVideos = videoRequest.videos ?? []
-            self.mainView.reloadData()
-            self.mainView.beginUpdates()
-            self.mainView.endUpdates()
-        }
+        let testTitleLabel = UILabel(frame: CGRect(x: 0, y: 0, width: width - 32, height: 20))
+        testTitleLabel.numberOfLines = 2
+        testTitleLabel.font = .systemFont(ofSize: 16, weight: .bold)
+        testTitleLabel.text = self.trendingVideos[indexPath.section + indexPath.row].title
+        testTitleLabel.sizeToFit()
+        testTitleLabel.frame.size.height = (testTitleLabel.frame.height <= 20) ? 20 : 40
+        
+        return CGSize(width: width, height: (width * 9/16) + testTitleLabel.frame.height + 40)
     }
     
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "video", for: indexPath) as! LargeVideoCell
-        cell.video = trendingVideos[indexPath.row]
-        return cell
+    override func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        super.scrollViewDidScroll(scrollView)
     }
     
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return trendingVideos.count
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        mainView.reloadData()
     }
     
 }
-*/

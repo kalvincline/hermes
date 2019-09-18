@@ -1,0 +1,8 @@
+platform :ios, '13.0'
+use_frameworks!
+target 'hermes' do
+    pod 'GoogleAPIClientForREST/YouTube'
+    pod 'Google/SignIn'
+    pod 'SwiftyStoreKit'
+    pod 'Kingfisher'
+end

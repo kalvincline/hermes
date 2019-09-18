@@ -7,23 +7,72 @@
 //
 
 import UIKit
-
-var safeArea: UIEdgeInsets {
-    return UIApplication.shared.windows[0].safeAreaInsets
-}
+import GoogleSignIn
+import FirebaseCore
+import GoogleAPIClientForREST
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate , GIDSignInDelegate {
 
     var window: UIWindow?
-    let viewController = ViewController()
+    let viewController = MainViewController()
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         window = UIWindow(frame: UIScreen.main.bounds)
         window?.rootViewController = viewController
         window?.makeKeyAndVisible()
+        
+        FIRConfiguration.sharedInstance()?.setLoggerLevel(.min)
+        FIRApp.configure(with: FIROptions(contentsOfFile: Bundle.main.path(forResource: "GoogleService-Info", ofType: "plist")))
+        GIDSignIn.sharedInstance().clientID = FIRApp.defaultApp()?.options.clientID
+        GIDSignIn.sharedInstance().delegate = self
+        
+        setupShortcuts(user: nil)
         return true
+    }
+    
+    func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+        if url.absoluteString == "com.googleusercontent.apps.60942394550-auudr87489l2052ktetai16lr99p0n33" {
+            return GIDSignIn.sharedInstance().handle(url, sourceApplication: options[UIApplication.OpenURLOptionsKey.sourceApplication] as? String, annotation: options[UIApplication.OpenURLOptionsKey.annotation])
+        } else {
+            return true
+        }
+    }
+    
+    func setupShortcuts(user: GIDGoogleUser?) {
+        let watchLater = UIApplicationShortcutItem(type: "com.aidancline.hermes.watchlater", localizedTitle: "Watch Later", localizedSubtitle: nil, icon: UIApplicationShortcutIcon(systemImageName: "clock"), userInfo: nil)
+        let subscriptions = UIApplicationShortcutItem(type: "com.aidancline.hermes.subscriptions", localizedTitle: "Subscriptions", localizedSubtitle: nil, icon: .init(systemImageName: "rectangle.stack"), userInfo: nil)
+        var account = UIApplicationShortcutItem(type: "com.aidancline.hermes.account", localizedTitle: "Account", localizedSubtitle: nil, icon: .init(systemImageName: "person.crop.circle"), userInfo: nil)
+        if let user = user {
+            account = UIApplicationShortcutItem(type: "com.aidancline.hermes.account", localizedTitle: "Account", localizedSubtitle: user.profile.name, icon: .init(systemImageName: "person.crop.circle"), userInfo: nil)
+        }
+        let search = UIApplicationShortcutItem(type: "com.aidancline.hermes.search", localizedTitle: "Search", localizedSubtitle: nil, icon: .init(systemImageName: "magnifyingglass"), userInfo: nil)
+        UIApplication.shared.shortcutItems = [watchLater, subscriptions, account, search]
+    }
+    
+    func sign(_ signIn: GIDSignIn!, didSignInFor user: GIDGoogleUser!, withError error: Error!) {
+        if let error = error {
+            print(error.localizedDescription)
+            isSignedIn = false
+            setupShortcuts(user: nil)
+        } else {
+            isSignedIn = true
+            print("Signed in with user \(user.profile.name!)")
+            setupShortcuts(user: user)
+        }
+    }
+    
+    func application(_ application: UIApplication, performActionFor shortcutItem: UIApplicationShortcutItem, completionHandler: @escaping (Bool) -> Void) {
+        if shortcutItem.type == "com.aidancline.hermes.watchlater" {
+            shortcutHandler(.watchLater)
+        } else if shortcutItem.type == "com.aidancline.hermes.subscriptions" {
+            shortcutHandler(.subscriptions)
+        } else if shortcutItem.type == "com.aidancline.hermes.account" {
+            shortcutHandler(.account)
+        } else if shortcutItem.type == "com.aidancline.hermes.search" {
+            shortcutHandler(.search)
+        }
     }
 
     func applicationWillResignActive(_ application: UIApplication) {
